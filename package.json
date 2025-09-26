@@ -6,8 +6,10 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/filipexyz/gatekit-sdk.git"
+    "url": "https://github.com/filipexyz/gatekit-sdk.git"
   },
-  "author": "GateKit",
-  "license": "MIT"
+  "homepage": "https://github.com/filipexyz/gatekit-sdk",
+  "bugs": {
+    "url": "https://github.com/filipexyz/gatekit-sdk/issues"
+  }
 }
