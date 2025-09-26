@@ -27,6 +27,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatekit/sdk.git"
+    "url": "https://github.com/filipexyz/gatekit-sdk.git"
+  },
+  "homepage": "https://github.com/filipexyz/gatekit-sdk",
+  "bugs": {
+    "url": "https://github.com/filipexyz/gatekit-sdk/issues"
   }
 }
