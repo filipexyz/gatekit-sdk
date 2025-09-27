@@ -1,6 +1,33 @@
 // Generated TypeScript types for GateKit SDK
 // DO NOT EDIT - This file is auto-generated from backend contracts
 
+export interface ProjectMember {
+  id: string;
+  projectId: string;
+  userId: string;
+  role: ProjectRole;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+}
+
+export interface AddMemberDto {
+  email: string;
+  role: ProjectRole;
+}
+
+export interface UpdateMemberRoleDto {
+  role: ProjectRole;
+}
+
+export interface MessageResponse {
+  message: string;
+}
+
 export interface CreateProjectDto {
 name: string;
 slug?: string;
@@ -44,10 +71,6 @@ export interface UpdatePlatformDto {
   isActive?: boolean;
   testMode?: boolean;
   credentials?: Record<string, unknown>;
-}
-
-export interface MessageResponse {
-  message: string;
 }
 
 export interface QueryMessagesDto {
@@ -201,6 +224,8 @@ export interface ApiKeyRollResponse {
   createdAt: Date;
   oldKeyRevokedAt: Date;
 }
+
+export type ProjectRole = 'owner' | 'admin' | 'member' | 'viewer';
 
 export type ProjectEnvironment = 'development' | 'staging' | 'production';
 
