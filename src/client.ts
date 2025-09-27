@@ -17,6 +17,8 @@ import {
   MessageSendResponse,
   MessageStatsResponse,
   MessageStatusResponse,
+  PlatformLogStatsResponse,
+  PlatformLogsResponse,
   PlatformResponse,
   Project,
   ProjectMember,
@@ -25,7 +27,8 @@ import {
   SendMessageDto,
   SentMessage,
   UpdateMemberRoleDto,
-  UpdatePlatformDto
+  UpdatePlatformDto,
+  UpdateProjectDto
 } from './types';
 import { GateKitError, AuthenticationError, RateLimitError } from './errors';
 
@@ -63,6 +66,11 @@ class ProjectsAPI {
 
   async list(): Promise<Project[]> {
     const response = await this.client.get<Project[]>(`/api/v1/projects`);
+    return response.data;
+  }
+
+  async update(slug: string, data: UpdateProjectDto): Promise<Project> {
+    const response = await this.client.get<Project>(`/api/v1/projects/${slug}`, { params: data });
     return response.data;
   }
 }
@@ -169,6 +177,25 @@ class ApikeysAPI {
   }
 }
 
+class PlatformLogsAPI {
+  constructor(private client: AxiosInstance) {}
+
+  async list(slug: string): Promise<PlatformLogsResponse> {
+    const response = await this.client.get<PlatformLogsResponse>(`/api/v1/projects/${slug}/platforms/logs`);
+    return response.data;
+  }
+
+  async get(slug: string, platformId: string): Promise<PlatformLogsResponse> {
+    const response = await this.client.get<PlatformLogsResponse>(`/api/v1/projects/${slug}/platforms/${platformId}/logs`);
+    return response.data;
+  }
+
+  async stats(slug: string): Promise<PlatformLogStatsResponse> {
+    const response = await this.client.get<PlatformLogStatsResponse>(`/api/v1/projects/${slug}/platforms/logs/stats`);
+    return response.data;
+  }
+}
+
 export class GateKit {
   private client: AxiosInstance;
 
@@ -178,6 +205,7 @@ export class GateKit {
   readonly platforms: PlatformsAPI;
   readonly messages: MessagesAPI;
   readonly apikeys: ApikeysAPI;
+  readonly platformLogs: PlatformLogsAPI;
 
   constructor(config: GateKitConfig) {
     this.client = axios.create({
@@ -195,6 +223,7 @@ export class GateKit {
     this.platforms = new PlatformsAPI(this.client);
     this.messages = new MessagesAPI(this.client);
     this.apikeys = new ApikeysAPI(this.client);
+    this.platformLogs = new PlatformLogsAPI(this.client);
   }
 
   private setupAuthentication(config: GateKitConfig): void {
