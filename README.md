@@ -2,8 +2,6 @@
 
 TypeScript SDK for GateKit - Universal messaging gateway API.
 
-This repository contains the automatically generated TypeScript SDK for the GateKit API.
-
 ## Installation
 
 ```bash
@@ -43,6 +41,20 @@ const gk = new GateKit({
 ```
 
 ## API Reference
+
+## Members
+
+### List all members of a project
+```typescript
+// List all project members
+await gk.members.list('project-slug');
+```
+
+### Add a member to a project
+```typescript
+// Add a member with admin role
+await gk.members.add('project-slug', data);
+```
 
 ## Projects
 
@@ -126,3 +138,4 @@ try {
 - **🖥️ CLI Package**: [@gatekit/cli](https://www.npmjs.com/package/@gatekit/cli)
 - **📚 Documentation**: [docs.gatekit.dev](https://docs.gatekit.dev)
 - **🎛️ Dashboard**: [app.gatekit.dev](https://app.gatekit.dev)
+

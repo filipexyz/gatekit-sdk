@@ -3,6 +3,7 @@
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import {
+  AddMemberDto,
   ApiKeyListResponse,
   ApiKeyResponse,
   ApiKeyRollResponse,
@@ -18,13 +19,39 @@ import {
   MessageStatusResponse,
   PlatformResponse,
   Project,
+  ProjectMember,
   QueryMessagesDto,
   ReceivedMessage,
   SendMessageDto,
   SentMessage,
+  UpdateMemberRoleDto,
   UpdatePlatformDto
 } from './types';
 import { GateKitError, AuthenticationError, RateLimitError } from './errors';
+
+class MembersAPI {
+  constructor(private client: AxiosInstance) {}
+
+  async list(slug: string): Promise<ProjectMember[]> {
+    const response = await this.client.get<ProjectMember[]>(`/api/v1/projects/${slug}/members`);
+    return response.data;
+  }
+
+  async add(slug: string, data: AddMemberDto): Promise<ProjectMember> {
+    const response = await this.client.post<ProjectMember>(`/api/v1/projects/${slug}/members`, data);
+    return response.data;
+  }
+
+  async update(slug: string, userId: string, data: UpdateMemberRoleDto): Promise<ProjectMember> {
+    const response = await this.client.patch<ProjectMember>(`/api/v1/projects/${slug}/members/${userId}`, data);
+    return response.data;
+  }
+
+  async remove(slug: string, userId: string): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${slug}/members/${userId}`);
+    return response.data;
+  }
+}
 
 class ProjectsAPI {
   constructor(private client: AxiosInstance) {}
@@ -64,12 +91,12 @@ class PlatformsAPI {
   }
 
   async delete(projectSlug: string, id: string): Promise<MessageResponse> {
-    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`);
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`);
     return response.data;
   }
 
   async registerWebhook(projectSlug: string, id: string): Promise<MessageResponse> {
-    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/register-webhook`);
+    const response = await this.client.post<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/register-webhook`);
     return response.data;
   }
 }
@@ -93,7 +120,7 @@ class MessagesAPI {
   }
 
   async cleanup(projectSlug: string): Promise<MessageResponse> {
-    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${projectSlug}/messages/cleanup`);
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/messages/cleanup`);
     return response.data;
   }
 
@@ -108,7 +135,7 @@ class MessagesAPI {
   }
 
   async retry(projectSlug: string, jobId: string): Promise<MessageRetryResponse> {
-    const response = await this.client.get<MessageRetryResponse>(`/api/v1/projects/${projectSlug}/messages/retry/${jobId}`);
+    const response = await this.client.post<MessageRetryResponse>(`/api/v1/projects/${projectSlug}/messages/retry/${jobId}`);
     return response.data;
   }
 
@@ -118,7 +145,7 @@ class MessagesAPI {
   }
 }
 
-class ApiKeysAPI {
+class ApikeysAPI {
   constructor(private client: AxiosInstance) {}
 
   async create(projectSlug: string, data: CreateApiKeyDto): Promise<ApiKeyResponse> {
@@ -132,12 +159,12 @@ class ApiKeysAPI {
   }
 
   async revoke(projectSlug: string, keyId: string): Promise<MessageResponse> {
-    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${projectSlug}/keys/${keyId}`);
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/keys/${keyId}`);
     return response.data;
   }
 
   async roll(projectSlug: string, keyId: string): Promise<ApiKeyRollResponse> {
-    const response = await this.client.get<ApiKeyRollResponse>(`/api/v1/projects/${projectSlug}/keys/${keyId}/roll`);
+    const response = await this.client.post<ApiKeyRollResponse>(`/api/v1/projects/${projectSlug}/keys/${keyId}/roll`);
     return response.data;
   }
 }
@@ -146,10 +173,11 @@ export class GateKit {
   private client: AxiosInstance;
 
   // API group instances
+  readonly members: MembersAPI;
   readonly projects: ProjectsAPI;
   readonly platforms: PlatformsAPI;
   readonly messages: MessagesAPI;
-  readonly apikeys: ApiKeysAPI;
+  readonly apikeys: ApikeysAPI;
 
   constructor(config: GateKitConfig) {
     this.client = axios.create({
@@ -162,10 +190,11 @@ export class GateKit {
     this.setupErrorHandling();
 
     // Initialize API groups after client is ready
+    this.members = new MembersAPI(this.client);
     this.projects = new ProjectsAPI(this.client);
     this.platforms = new PlatformsAPI(this.client);
     this.messages = new MessagesAPI(this.client);
-    this.apikeys = new ApiKeysAPI(this.client);
+    this.apikeys = new ApikeysAPI(this.client);
   }
 
   private setupAuthentication(config: GateKitConfig): void {
