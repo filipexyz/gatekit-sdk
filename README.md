@@ -60,7 +60,7 @@ await gk.members.add('project-slug', data);
 
 ### Create a new project
 ```typescript
-// Create a development project
+// Create a simple project
 await gk.projects.create(, data);
 ```
 
@@ -110,6 +110,20 @@ await gk.apikeys.create('project-slug', data);
 ```typescript
 // List all API keys
 await gk.apikeys.list('project-slug');
+```
+
+## Platform Logs
+
+### List platform processing logs for a project
+```typescript
+// List recent platform logs
+await gk.platformLogs.list('project-slug');
+```
+
+### List logs for a specific platform configuration
+```typescript
+// List logs for specific platform
+await gk.platformLogs.get('slug', 'platformId');
 ```
 
 ## Error Handling

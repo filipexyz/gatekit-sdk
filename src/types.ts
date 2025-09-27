@@ -30,6 +30,7 @@ export interface MessageResponse {
 
 export interface CreateProjectDto {
 name: string;
+description?: string;
 slug?: string;
 environment?: ProjectEnvironment;
 isDefault?: boolean;
@@ -39,6 +40,7 @@ settings?: any;
 export interface Project {
   id: string;
   name: string;
+  description?: string;
   slug: string;
   environment: 'development' | 'staging' | 'production';
   isDefault: boolean;
@@ -48,6 +50,15 @@ export interface Project {
   _count?: {
     apiKeys: number;
   };
+}
+
+export interface UpdateProjectDto {
+name?: string;
+description?: string;
+slug?: string;
+environment?: ProjectEnvironment;
+isDefault?: boolean;
+settings?: any;
 }
 
 export interface CreatePlatformDto {
@@ -225,6 +236,30 @@ export interface ApiKeyRollResponse {
   oldKeyRevokedAt: Date;
 }
 
+export interface PlatformLogsResponse {
+  logs: PlatformLog[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+}
+
+export interface PlatformLogStatsResponse {
+  summary: Array<{
+    level: string;
+    category: string;
+    count: number;
+  }>;
+  recentErrors: Array<{
+    message: string;
+    category: string;
+    timestamp: string;
+    platform: string;
+  }>;
+}
+
 export type ProjectRole = 'owner' | 'admin' | 'member' | 'viewer';
 
 export type ProjectEnvironment = 'development' | 'staging' | 'production';
@@ -254,6 +289,24 @@ export interface MetadataDto {
   trackingId?: string;
   tags?: string[];
   priority?: 'low' | 'normal' | 'high';
+}
+
+export interface PlatformLog {
+  id: string;
+  projectId: string;
+  platformId?: string;
+  platform: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  category: 'connection' | 'webhook' | 'message' | 'error' | 'auth' | 'general';
+  message: string;
+  metadata?: Record<string, any>;
+  error?: string;
+  timestamp: string;
+  platformConfig?: {
+    id: string;
+    platform: string;
+    isActive: boolean;
+  };
 }
 
 // SDK configuration
