@@ -76,50 +76,6 @@ class ProjectsAPI {
   }
 }
 
-class MessagesAPI {
-  constructor(private client: AxiosInstance) {}
-
-  async list(projectSlug: string, data: QueryMessagesDto): Promise<MessageListResponse> {
-    const response = await this.client.get<MessageListResponse>(`/api/v1/projects/${projectSlug}/messages`, { params: data });
-    return response.data;
-  }
-
-  async stats(projectSlug: string): Promise<MessageStatsResponse> {
-    const response = await this.client.get<MessageStatsResponse>(`/api/v1/projects/${projectSlug}/messages/stats`);
-    return response.data;
-  }
-
-  async get(projectSlug: string, messageId: string): Promise<ReceivedMessage> {
-    const response = await this.client.get<ReceivedMessage>(`/api/v1/projects/${projectSlug}/messages/${messageId}`);
-    return response.data;
-  }
-
-  async cleanup(projectSlug: string): Promise<MessageResponse> {
-    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/messages/cleanup`);
-    return response.data;
-  }
-
-  async send(projectSlug: string, data: SendMessageDto): Promise<MessageSendResponse> {
-    const response = await this.client.post<MessageSendResponse>(`/api/v1/projects/${projectSlug}/messages/send`, data);
-    return response.data;
-  }
-
-  async status(projectSlug: string, jobId: string): Promise<MessageStatusResponse> {
-    const response = await this.client.get<MessageStatusResponse>(`/api/v1/projects/${projectSlug}/messages/status/${jobId}`);
-    return response.data;
-  }
-
-  async retry(projectSlug: string, jobId: string): Promise<MessageRetryResponse> {
-    const response = await this.client.post<MessageRetryResponse>(`/api/v1/projects/${projectSlug}/messages/retry/${jobId}`);
-    return response.data;
-  }
-
-  async sent(projectSlug: string): Promise<SentMessage[]> {
-    const response = await this.client.get<SentMessage[]>(`/api/v1/projects/${projectSlug}/messages/sent`);
-    return response.data;
-  }
-}
-
 class PlatformsAPI {
   constructor(private client: AxiosInstance) {}
 
@@ -160,6 +116,50 @@ class PlatformsAPI {
 
   async supported(): Promise<SupportedPlatformsResponse> {
     const response = await this.client.get<SupportedPlatformsResponse>(`/api/v1/platforms/supported`);
+    return response.data;
+  }
+}
+
+class MessagesAPI {
+  constructor(private client: AxiosInstance) {}
+
+  async list(projectSlug: string, data: QueryMessagesDto): Promise<MessageListResponse> {
+    const response = await this.client.get<MessageListResponse>(`/api/v1/projects/${projectSlug}/messages`, { params: data });
+    return response.data;
+  }
+
+  async stats(projectSlug: string): Promise<MessageStatsResponse> {
+    const response = await this.client.get<MessageStatsResponse>(`/api/v1/projects/${projectSlug}/messages/stats`);
+    return response.data;
+  }
+
+  async get(projectSlug: string, messageId: string): Promise<ReceivedMessage> {
+    const response = await this.client.get<ReceivedMessage>(`/api/v1/projects/${projectSlug}/messages/${messageId}`);
+    return response.data;
+  }
+
+  async cleanup(projectSlug: string): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/messages/cleanup`);
+    return response.data;
+  }
+
+  async send(projectSlug: string, data: SendMessageDto): Promise<MessageSendResponse> {
+    const response = await this.client.post<MessageSendResponse>(`/api/v1/projects/${projectSlug}/messages/send`, data);
+    return response.data;
+  }
+
+  async status(projectSlug: string, jobId: string): Promise<MessageStatusResponse> {
+    const response = await this.client.get<MessageStatusResponse>(`/api/v1/projects/${projectSlug}/messages/status/${jobId}`);
+    return response.data;
+  }
+
+  async retry(projectSlug: string, jobId: string): Promise<MessageRetryResponse> {
+    const response = await this.client.post<MessageRetryResponse>(`/api/v1/projects/${projectSlug}/messages/retry/${jobId}`);
+    return response.data;
+  }
+
+  async sent(projectSlug: string): Promise<SentMessage[]> {
+    const response = await this.client.get<SentMessage[]>(`/api/v1/projects/${projectSlug}/messages/sent`);
     return response.data;
   }
 }
@@ -213,8 +213,8 @@ export class GateKit {
   // API group instances
   readonly members: MembersAPI;
   readonly projects: ProjectsAPI;
-  readonly messages: MessagesAPI;
   readonly platforms: PlatformsAPI;
+  readonly messages: MessagesAPI;
   readonly apikeys: ApikeysAPI;
   readonly platformLogs: PlatformLogsAPI;
 
@@ -231,8 +231,8 @@ export class GateKit {
     // Initialize API groups after client is ready
     this.members = new MembersAPI(this.client);
     this.projects = new ProjectsAPI(this.client);
-    this.messages = new MessagesAPI(this.client);
     this.platforms = new PlatformsAPI(this.client);
+    this.messages = new MessagesAPI(this.client);
     this.apikeys = new ApikeysAPI(this.client);
     this.platformLogs = new PlatformLogsAPI(this.client);
   }
