@@ -26,6 +26,7 @@ import {
   ReceivedMessage,
   SendMessageDto,
   SentMessage,
+  SupportedPlatformsResponse,
   UpdateMemberRoleDto,
   UpdatePlatformDto,
   UpdateProjectDto
@@ -105,6 +106,16 @@ class PlatformsAPI {
 
   async registerWebhook(projectSlug: string, id: string): Promise<MessageResponse> {
     const response = await this.client.post<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/register-webhook`);
+    return response.data;
+  }
+
+  async qrCode(projectSlug: string, id: string): Promise<MessageResponse> {
+    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/qr-code`);
+    return response.data;
+  }
+
+  async supported(): Promise<SupportedPlatformsResponse> {
+    const response = await this.client.get<SupportedPlatformsResponse>(`/api/v1/platforms/supported`);
     return response.data;
   }
 }

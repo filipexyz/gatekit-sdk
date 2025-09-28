@@ -192,7 +192,7 @@ export interface SentMessage {
   targetUserId: string | null;
   targetType: string;
   messageText: string | null;
-  messageContent: any | null;
+  messageContent: Record<string, unknown> | null;
   status: string;
   errorMessage: string | null;
   sentAt: Date | null;
@@ -257,6 +257,24 @@ export interface PlatformLogStatsResponse {
     category: string;
     timestamp: string;
     platform: string;
+  }>;
+}
+
+export interface SupportedPlatformsResponse {
+  platforms: Array<{
+    name: string;
+    displayName: string;
+    connectionType: string;
+    features: {
+      supportsWebhooks: boolean;
+      supportsPolling: boolean;
+      supportsWebSocket: boolean;
+    };
+    credentials: {
+      required: string[];
+      optional: string[];
+      example: Record<string, any>;
+    } | null;
   }>;
 }
 
