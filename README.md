@@ -70,20 +70,6 @@ await gk.projects.create(, data);
 await gk.projects.list();
 ```
 
-## Messages
-
-### List received messages for a project
-```typescript
-// Get latest 50 messages
-await gk.messages.list('project-slug', data);
-```
-
-### Get message statistics for a project
-```typescript
-// Get message statistics
-await gk.messages.stats('project-slug');
-```
-
 ## Platforms
 
 ### Configure a new platform integration
@@ -96,6 +82,20 @@ await gk.platforms.create('project-slug', data);
 ```typescript
 // List all platforms
 await gk.platforms.list('project-slug');
+```
+
+## Messages
+
+### List received messages for a project
+```typescript
+// Get latest 50 messages
+await gk.messages.list('project-slug', data);
+```
+
+### Get message statistics for a project
+```typescript
+// Get message statistics
+await gk.messages.stats('project-slug');
 ```
 
 ## ApiKeys

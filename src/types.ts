@@ -1,77 +1,71 @@
 // Generated TypeScript types for GateKit SDK
 // DO NOT EDIT - This file is auto-generated from backend contracts
 
-export interface ProjectMember {
-  id: string;
-  projectId: string;
-  userId: string;
-  role: ProjectRole;
-  createdAt: string;
-  updatedAt: string;
-  user: {
-    id: string;
-    email: string;
-    name?: string;
-  };
-}
-
 export interface AddMemberDto {
   email: string;
   role: ProjectRole;
 }
 
-export interface UpdateMemberRoleDto {
-  role: ProjectRole;
+export interface ApiKeyListResponse {
+  id: string;
+  name: string;
+  maskedKey: string;
+  scopes: string[];
+  lastUsedAt: Date | null;
+  expiresAt: Date | null;
+  createdAt: Date;
 }
 
-export interface MessageResponse {
-  message: string;
+export interface ApiKeyResponse {
+  id: string;
+  key: string;
+  name: string;
+  prefix: string;
+  scopes: string[];
+  expiresAt: Date | null;
+  createdAt: Date;
+}
+
+export interface ApiKeyRollResponse {
+  id: string;
+  key: string;
+  name: string;
+  prefix: string;
+  scopes: string[];
+  expiresAt: Date | null;
+  createdAt: Date;
+  oldKeyRevokedAt: Date;
+}
+
+export interface ContentDto {
+  text?: string;
+  attachments?: any[];
+  buttons?: any[];
+  embeds?: any[];
+}
+
+export interface CreateApiKeyDto {
+  name: string;
+  scopes: string[];
+  expiresInDays?: number | undefined;
+}
+
+export interface CreatePlatformDto {
+  platform: PlatformType;
+  name: string;
+  description?: string | undefined;
+  credentials: Record<string, any>;
+  isActive?: boolean | undefined;
+  testMode?: boolean | undefined;
 }
 
 export interface CreateProjectDto {
-name: string;
-description?: string;
-slug?: string;
-environment?: ProjectEnvironment;
-isDefault?: boolean;
-settings?: any;
-}
-
-export interface Project {
-  id: string;
   name: string;
-  description?: string;
-  slug: string;
-  environment: 'development' | 'staging' | 'production';
-  isDefault: boolean;
-  settings?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-  _count?: {
-    apiKeys: number;
-  };
-}
-
-export interface UpdateProjectDto {
-name?: string;
-description?: string;
-slug?: string;
-environment?: ProjectEnvironment;
-isDefault?: boolean;
-settings?: any;
-}
-
-export interface QueryMessagesDto {
-  platform?: string;
-  platformId?: string;
-  chatId?: string;
-  userId?: string;
-  startDate?: string;
-  endDate?: string;
-  limit?: number;
-  offset?: number;
-  order?: 'asc' | 'desc';
-  raw?: boolean;
+  description?: string | undefined;
+  slug?: string | undefined;
+  environment?: ProjectEnvironment | undefined;
+  isDefault?: boolean | undefined;
+  settings?: any;
 }
 
 export interface MessageListResponse {
@@ -82,6 +76,30 @@ export interface MessageListResponse {
     offset: number;
     hasMore: boolean;
   };
+}
+
+export interface MessageResponse {
+  message: string;
+}
+
+export interface MessageRetryResponse {
+  success: boolean;
+  jobId: string;
+  message: string;
+}
+
+export interface MessageSendResponse {
+  success: boolean;
+  jobId: string;
+  status: string;
+  targets: Array<{
+    platformId: string;
+    type: string;
+    id: string;
+  }>;
+  platformIds: string[];
+  timestamp: string;
+  message: string;
 }
 
 export interface MessageStatsResponse {
@@ -103,6 +121,128 @@ export interface MessageStatsResponse {
       count: number;
     }>;
   };
+}
+
+export interface MessageStatusResponse {
+  jobId: string;
+  status: string;
+  progress?: number;
+  result?: any;
+  error?: string;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+export interface MetadataDto {
+  trackingId?: string;
+  tags?: string[];
+  priority?: 'low' | 'normal' | 'high';
+}
+
+export interface OptionsDto {
+  replyTo?: string;
+  silent?: boolean;
+  scheduled?: string;
+}
+
+export interface PlatformLog {
+  id: string;
+  projectId: string;
+  platformId?: string;
+  platform: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  category: 'connection' | 'webhook' | 'message' | 'error' | 'auth' | 'general';
+  message: string;
+  metadata?: Record<string, any>;
+  error?: string;
+  timestamp: string;
+  platformConfig?: {
+    id: string;
+    platform: string;
+    isActive: boolean;
+  };
+}
+
+export interface PlatformLogsResponse {
+  logs: PlatformLog[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+}
+
+export interface PlatformLogStatsResponse {
+  summary: Array<{
+    level: string;
+    category: string;
+    count: number;
+  }>;
+  recentErrors: Array<{
+    message: string;
+    category: string;
+    timestamp: string;
+    platform: string;
+  }>;
+}
+
+export interface PlatformResponse {
+  id: string;
+  platform: string;
+  isActive: boolean;
+  testMode: boolean;
+  webhookUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type PlatformType = 'discord' | 'telegram';
+
+export interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  slug: string;
+  environment: 'development' | 'staging' | 'production';
+  isDefault: boolean;
+  settings?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    apiKeys: number;
+  };
+}
+
+export type ProjectEnvironment = 'development' | 'staging' | 'production';
+
+export interface ProjectMember {
+  id: string;
+  projectId: string;
+  userId: string;
+  role: ProjectRole;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+}
+
+export type ProjectRole = 'owner' | 'admin' | 'member' | 'viewer';
+
+export interface QueryMessagesDto {
+  platform?: string | undefined;
+  platformId?: string | undefined;
+  chatId?: string | undefined;
+  userId?: string | undefined;
+  startDate?: string | undefined;
+  endDate?: string | undefined;
+  limit?: number | undefined;
+  offset?: number | undefined;
+  order?: "asc" | "desc" | undefined;
+  raw?: boolean | undefined;
 }
 
 export interface ReceivedMessage {
@@ -131,36 +271,6 @@ export interface SendMessageDto {
   metadata?: MetadataDto;
 }
 
-export interface MessageSendResponse {
-  success: boolean;
-  jobId: string;
-  status: string;
-  targets: Array<{
-    platformId: string;
-    type: string;
-    id: string;
-  }>;
-  platformIds: string[];
-  timestamp: string;
-  message: string;
-}
-
-export interface MessageStatusResponse {
-  jobId: string;
-  status: string;
-  progress?: number;
-  result?: any;
-  error?: string;
-  createdAt: Date;
-  updatedAt?: Date;
-}
-
-export interface MessageRetryResponse {
-  success: boolean;
-  jobId: string;
-  message: string;
-}
-
 export interface SentMessage {
   id: string;
   platform: string;
@@ -175,94 +285,6 @@ export interface SentMessage {
   errorMessage: string | null;
   sentAt: Date | null;
   createdAt: Date;
-}
-
-export interface CreatePlatformDto {
-platform: PlatformType;
-name: string;
-description?: string;
-credentials: Record<string, any>;
-isActive?: boolean;
-testMode?: boolean;
-}
-
-export interface PlatformResponse {
-  id: string;
-  platform: string;
-  isActive: boolean;
-  testMode: boolean;
-  webhookUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UpdatePlatformDto {
-  name?: string;
-  description?: string;
-  isActive?: boolean;
-  testMode?: boolean;
-  credentials?: Record<string, unknown>;
-}
-
-export interface CreateApiKeyDto {
-name: string;
-scopes: string[];
-expiresInDays?: number;
-}
-
-export interface ApiKeyResponse {
-  id: string;
-  key: string;
-  name: string;
-  prefix: string;
-  scopes: string[];
-  expiresAt: Date | null;
-  createdAt: Date;
-}
-
-export interface ApiKeyListResponse {
-  id: string;
-  name: string;
-  maskedKey: string;
-  scopes: string[];
-  lastUsedAt: Date | null;
-  expiresAt: Date | null;
-  createdAt: Date;
-}
-
-export interface ApiKeyRollResponse {
-  id: string;
-  key: string;
-  name: string;
-  prefix: string;
-  scopes: string[];
-  expiresAt: Date | null;
-  createdAt: Date;
-  oldKeyRevokedAt: Date;
-}
-
-export interface PlatformLogsResponse {
-  logs: PlatformLog[];
-  pagination: {
-    total: number;
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
-}
-
-export interface PlatformLogStatsResponse {
-  summary: Array<{
-    level: string;
-    category: string;
-    count: number;
-  }>;
-  recentErrors: Array<{
-    message: string;
-    category: string;
-    timestamp: string;
-    platform: string;
-  }>;
 }
 
 export interface SupportedPlatformsResponse {
@@ -283,53 +305,31 @@ export interface SupportedPlatformsResponse {
   }>;
 }
 
-export type ProjectRole = 'owner' | 'admin' | 'member' | 'viewer';
-
-export type ProjectEnvironment = 'development' | 'staging' | 'production';
-
 export interface TargetDto {
   platformId: string;
   type: 'user' | 'channel' | 'group';
   id: string;
 }
 
-export interface ContentDto {
-  text?: string;
-  attachments?: any[];
-  buttons?: any[];
-  embeds?: any[];
+export interface UpdateMemberRoleDto {
+  role: ProjectRole;
 }
 
-export interface OptionsDto {
-  replyTo?: string;
-  silent?: boolean;
-  scheduled?: string;
+export interface UpdatePlatformDto {
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+  testMode?: boolean;
+  credentials?: Record<string, unknown>;
 }
 
-export interface MetadataDto {
-  trackingId?: string;
-  tags?: string[];
-  priority?: 'low' | 'normal' | 'high';
-}
-
-export type PlatformType = 'discord' | 'telegram';
-
-export interface PlatformLog {
-  id: string;
-  projectId: string;
-  platformId?: string;
-  platform: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
-  category: 'connection' | 'webhook' | 'message' | 'error' | 'auth' | 'general';
-  message: string;
-  metadata?: Record<string, any>;
-  error?: string;
-  timestamp: string;
-  platformConfig?: {
-    id: string;
-    platform: string;
-    isActive: boolean;
-  };
+export interface UpdateProjectDto {
+  name?: string | undefined;
+  description?: string | undefined;
+  slug?: string | undefined;
+  environment?: ProjectEnvironment | undefined;
+  isDefault?: boolean | undefined;
+  settings?: any;
 }
 
 // SDK configuration

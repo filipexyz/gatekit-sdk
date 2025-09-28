@@ -7,5 +7,5 @@ export * from './errors';
 
 // Version info
 export const SDK_VERSION = '1.0.0';
-export const GENERATED_AT = '2025-09-28T18:09:32.193Z';
+export const GENERATED_AT = '2025-09-28T23:41:34.681Z';
 export const CONTRACTS_COUNT = 30;
