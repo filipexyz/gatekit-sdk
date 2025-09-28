@@ -61,29 +61,6 @@ isDefault?: boolean;
 settings?: any;
 }
 
-export interface CreatePlatformDto {
-platform: PlatformType;
-credentials: Record<string, any>;
-isActive?: boolean;
-testMode?: boolean;
-}
-
-export interface PlatformResponse {
-  id: string;
-  platform: string;
-  isActive: boolean;
-  testMode: boolean;
-  webhookUrl: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UpdatePlatformDto {
-  isActive?: boolean;
-  testMode?: boolean;
-  credentials?: Record<string, unknown>;
-}
-
 export interface QueryMessagesDto {
   platform?: string;
   platformId?: string;
@@ -94,6 +71,7 @@ export interface QueryMessagesDto {
   limit?: number;
   offset?: number;
   order?: 'asc' | 'desc';
+  raw?: boolean;
 }
 
 export interface MessageListResponse {
@@ -199,6 +177,33 @@ export interface SentMessage {
   createdAt: Date;
 }
 
+export interface CreatePlatformDto {
+platform: PlatformType;
+name: string;
+description?: string;
+credentials: Record<string, any>;
+isActive?: boolean;
+testMode?: boolean;
+}
+
+export interface PlatformResponse {
+  id: string;
+  platform: string;
+  isActive: boolean;
+  testMode: boolean;
+  webhookUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UpdatePlatformDto {
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+  testMode?: boolean;
+  credentials?: Record<string, unknown>;
+}
+
 export interface CreateApiKeyDto {
 name: string;
 scopes: string[];
@@ -282,8 +287,6 @@ export type ProjectRole = 'owner' | 'admin' | 'member' | 'viewer';
 
 export type ProjectEnvironment = 'development' | 'staging' | 'production';
 
-export type PlatformType = 'discord' | 'telegram';
-
 export interface TargetDto {
   platformId: string;
   type: 'user' | 'channel' | 'group';
@@ -308,6 +311,8 @@ export interface MetadataDto {
   tags?: string[];
   priority?: 'low' | 'normal' | 'high';
 }
+
+export type PlatformType = 'discord' | 'telegram';
 
 export interface PlatformLog {
   id: string;
