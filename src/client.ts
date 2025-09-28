@@ -76,50 +76,6 @@ class ProjectsAPI {
   }
 }
 
-class PlatformsAPI {
-  constructor(private client: AxiosInstance) {}
-
-  async create(projectSlug: string, data: CreatePlatformDto): Promise<PlatformResponse> {
-    const response = await this.client.post<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms`, data);
-    return response.data;
-  }
-
-  async list(projectSlug: string): Promise<PlatformResponse[]> {
-    const response = await this.client.get<PlatformResponse[]>(`/api/v1/projects/${projectSlug}/platforms`);
-    return response.data;
-  }
-
-  async get(projectSlug: string, id: string): Promise<PlatformResponse> {
-    const response = await this.client.get<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`);
-    return response.data;
-  }
-
-  async update(projectSlug: string, id: string, data: UpdatePlatformDto): Promise<PlatformResponse> {
-    const response = await this.client.patch<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`, data);
-    return response.data;
-  }
-
-  async delete(projectSlug: string, id: string): Promise<MessageResponse> {
-    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`);
-    return response.data;
-  }
-
-  async registerWebhook(projectSlug: string, id: string): Promise<MessageResponse> {
-    const response = await this.client.post<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/register-webhook`);
-    return response.data;
-  }
-
-  async qrCode(projectSlug: string, id: string): Promise<MessageResponse> {
-    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/qr-code`);
-    return response.data;
-  }
-
-  async supported(): Promise<SupportedPlatformsResponse> {
-    const response = await this.client.get<SupportedPlatformsResponse>(`/api/v1/platforms/supported`);
-    return response.data;
-  }
-}
-
 class MessagesAPI {
   constructor(private client: AxiosInstance) {}
 
@@ -160,6 +116,50 @@ class MessagesAPI {
 
   async sent(projectSlug: string): Promise<SentMessage[]> {
     const response = await this.client.get<SentMessage[]>(`/api/v1/projects/${projectSlug}/messages/sent`);
+    return response.data;
+  }
+}
+
+class PlatformsAPI {
+  constructor(private client: AxiosInstance) {}
+
+  async create(projectSlug: string, data: CreatePlatformDto): Promise<PlatformResponse> {
+    const response = await this.client.post<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms`, data);
+    return response.data;
+  }
+
+  async list(projectSlug: string): Promise<PlatformResponse[]> {
+    const response = await this.client.get<PlatformResponse[]>(`/api/v1/projects/${projectSlug}/platforms`);
+    return response.data;
+  }
+
+  async get(projectSlug: string, id: string): Promise<PlatformResponse> {
+    const response = await this.client.get<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`);
+    return response.data;
+  }
+
+  async update(projectSlug: string, id: string, data: UpdatePlatformDto): Promise<PlatformResponse> {
+    const response = await this.client.patch<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`, data);
+    return response.data;
+  }
+
+  async delete(projectSlug: string, id: string): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`);
+    return response.data;
+  }
+
+  async registerWebhook(projectSlug: string, id: string): Promise<MessageResponse> {
+    const response = await this.client.post<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/register-webhook`);
+    return response.data;
+  }
+
+  async qrCode(projectSlug: string, id: string): Promise<MessageResponse> {
+    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/qr-code`);
+    return response.data;
+  }
+
+  async supported(): Promise<SupportedPlatformsResponse> {
+    const response = await this.client.get<SupportedPlatformsResponse>(`/api/v1/platforms/supported`);
     return response.data;
   }
 }
@@ -213,8 +213,8 @@ export class GateKit {
   // API group instances
   readonly members: MembersAPI;
   readonly projects: ProjectsAPI;
-  readonly platforms: PlatformsAPI;
   readonly messages: MessagesAPI;
+  readonly platforms: PlatformsAPI;
   readonly apikeys: ApikeysAPI;
   readonly platformLogs: PlatformLogsAPI;
 
@@ -231,8 +231,8 @@ export class GateKit {
     // Initialize API groups after client is ready
     this.members = new MembersAPI(this.client);
     this.projects = new ProjectsAPI(this.client);
-    this.platforms = new PlatformsAPI(this.client);
     this.messages = new MessagesAPI(this.client);
+    this.platforms = new PlatformsAPI(this.client);
     this.apikeys = new ApikeysAPI(this.client);
     this.platformLogs = new PlatformLogsAPI(this.client);
   }

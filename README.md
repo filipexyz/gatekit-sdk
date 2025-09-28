@@ -70,20 +70,6 @@ await gk.projects.create(, data);
 await gk.projects.list();
 ```
 
-## Platforms
-
-### Configure a new platform integration
-```typescript
-// Add Discord bot
-await gk.platforms.create('project-slug', data);
-```
-
-### List configured platforms for project
-```typescript
-// List all platforms
-await gk.platforms.list('project-slug');
-```
-
 ## Messages
 
 ### List received messages for a project
@@ -96,6 +82,20 @@ await gk.messages.list('project-slug', data);
 ```typescript
 // Get message statistics
 await gk.messages.stats('project-slug');
+```
+
+## Platforms
+
+### Configure a new platform integration
+```typescript
+// Add Discord bot
+await gk.platforms.create('project-slug', data);
+```
+
+### List configured platforms for project
+```typescript
+// List all platforms
+await gk.platforms.list('project-slug');
 ```
 
 ## ApiKeys
