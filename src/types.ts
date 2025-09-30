@@ -37,35 +37,63 @@ export interface ApiKeyRollResponse {
   oldKeyRevokedAt: Date;
 }
 
+export interface AttachmentDto {
+  url?: string;
+  data?: string;
+  filename?: string;
+  mimeType?: string;
+  caption?: string;
+}
+
+export interface ButtonDto {
+  text: string;
+  value: string;
+}
+
 export interface ContentDto {
   text?: string;
-  attachments?: any[];
-  buttons?: any[];
-  embeds?: any[];
+  attachments?: AttachmentDto[];
+  buttons?: ButtonDto[];
+  embeds?: EmbedDto[];
 }
 
 export interface CreateApiKeyDto {
   name: string;
   scopes: string[];
-  expiresInDays?: number | undefined;
+  expiresInDays?: number;
 }
 
 export interface CreatePlatformDto {
   platform: PlatformType;
   name: string;
-  description?: string | undefined;
+  description?: string;
   credentials: Record<string, any>;
-  isActive?: boolean | undefined;
-  testMode?: boolean | undefined;
+  isActive?: boolean;
+  testMode?: boolean;
 }
 
 export interface CreateProjectDto {
   name: string;
-  description?: string | undefined;
-  slug?: string | undefined;
-  environment?: ProjectEnvironment | undefined;
-  isDefault?: boolean | undefined;
+  description?: string;
+  slug?: string;
+  environment?: ProjectEnvironment;
+  isDefault?: boolean;
   settings?: any;
+}
+
+export interface CreateWebhookDto {
+  name: string;
+  url: string;
+  events: WebhookEventType[];
+  secret?: string;
+}
+
+export interface EmbedDto {
+  title?: string;
+  description?: string;
+  color?: string;
+  imageUrl?: string;
+  thumbnailUrl?: string;
 }
 
 export interface MessageListResponse {
@@ -136,7 +164,7 @@ export interface MessageStatusResponse {
 export interface MetadataDto {
   trackingId?: string;
   tags?: string[];
-  priority?: 'low' | 'normal' | 'high';
+  priority?: Priority;
 }
 
 export interface OptionsDto {
@@ -199,6 +227,8 @@ export interface PlatformResponse {
 
 export type PlatformType = 'discord' | 'telegram';
 
+export type Priority = 'low' | 'normal' | 'high';
+
 export interface Project {
   id: string;
   name: string;
@@ -233,16 +263,16 @@ export interface ProjectMember {
 export type ProjectRole = 'owner' | 'admin' | 'member' | 'viewer';
 
 export interface QueryMessagesDto {
-  platform?: string | undefined;
-  platformId?: string | undefined;
-  chatId?: string | undefined;
-  userId?: string | undefined;
-  startDate?: string | undefined;
-  endDate?: string | undefined;
-  limit?: number | undefined;
-  offset?: number | undefined;
-  order?: "asc" | "desc" | undefined;
-  raw?: boolean | undefined;
+  platform?: string;
+  platformId?: string;
+  chatId?: string;
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+  limit?: number;
+  offset?: number;
+  order?: 'asc' | 'desc';
+  raw?: boolean;
 }
 
 export interface ReceivedMessage {
@@ -307,9 +337,11 @@ export interface SupportedPlatformsResponse {
 
 export interface TargetDto {
   platformId: string;
-  type: 'user' | 'channel' | 'group';
+  type: TargetType;
   id: string;
 }
+
+export type TargetType = 'user' | 'channel' | 'group';
 
 export interface UpdateMemberRoleDto {
   role: ProjectRole;
@@ -324,12 +356,44 @@ export interface UpdatePlatformDto {
 }
 
 export interface UpdateProjectDto {
-  name?: string | undefined;
-  description?: string | undefined;
-  slug?: string | undefined;
-  environment?: ProjectEnvironment | undefined;
-  isDefault?: boolean | undefined;
+  name?: string;
+  description?: string;
+  slug?: string;
+  environment?: ProjectEnvironment;
+  isDefault?: boolean;
   settings?: any;
+}
+
+export interface UpdateWebhookDto {
+  name?: string;
+  url?: string;
+  events?: WebhookEventType[];
+  isActive?: boolean;
+}
+
+export interface WebhookDetailResponse {
+  stats: {
+    total: number;
+    successful: number;
+    failed: number;
+    pending: number;
+    successRate: string;
+  };
+}
+
+export type WebhookEventType = 'message.received' | 'message.sent' | 'message.failed';
+
+export interface WebhookResponse {
+  id: string;
+  projectId: string;
+  name: string;
+  url: string;
+  events: WebhookEventType[];
+  secret: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  message?: string;
 }
 
 // SDK configuration
