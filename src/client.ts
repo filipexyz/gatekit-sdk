@@ -3,114 +3,179 @@
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import {
+  AddAliasDto,
   AddMemberDto,
   ApiKeyListResponse,
   ApiKeyResponse,
   ApiKeyRollResponse,
   CreateApiKeyDto,
+  CreateIdentityDto,
   CreatePlatformDto,
   CreateProjectDto,
+  CreateWebhookDto,
   GateKitConfig,
+  IdentityAliasResponse,
+  IdentityResponse,
   MessageListResponse,
   MessageResponse,
   MessageRetryResponse,
   MessageSendResponse,
   MessageStatsResponse,
   MessageStatusResponse,
+  PermissionResponse,
   PlatformLogStatsResponse,
   PlatformLogsResponse,
   PlatformResponse,
-  Project,
-  ProjectMember,
+  ProjectMemberResponse,
+  ProjectResponse,
   QueryMessagesDto,
-  ReceivedMessage,
+  ReceivedMessageResponse,
+  ReceivedReactionResponse,
   SendMessageDto,
-  SentMessage,
+  SendReactionDto,
+  SentMessageResponse,
   SupportedPlatformsResponse,
+  UpdateIdentityDto,
   UpdateMemberRoleDto,
   UpdatePlatformDto,
-  UpdateProjectDto
+  UpdateProjectDto,
+  UpdateWebhookDto,
+  WebhookDeliveryListResponse,
+  WebhookDetailResponse,
+  WebhookResponse
 } from './types';
 import { GateKitError, AuthenticationError, RateLimitError } from './errors';
 
+class WebhooksAPI {
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
+
+  async create(options: CreateWebhookDto & { project?: string }): Promise<WebhookResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<WebhookResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/webhooks`, data);
+    return response.data;
+  }
+
+  async list(options?: { project?: string }): Promise<WebhookResponse[]> {
+    const response = await this.client.get<WebhookResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/webhooks`);
+    return response.data;
+  }
+
+  async get(webhookId: string, options?: { project?: string }): Promise<WebhookDetailResponse> {
+    const response = await this.client.get<WebhookDetailResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/webhooks/${webhookId}`);
+    return response.data;
+  }
+
+  async update(webhookId: string, options: UpdateWebhookDto & { project?: string }): Promise<WebhookResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.patch<WebhookResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/webhooks/${webhookId}`, data);
+    return response.data;
+  }
+
+  async delete(webhookId: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/webhooks/${webhookId}`);
+    return response.data;
+  }
+
+  async deliveries(webhookId: string, options?: { project?: string }): Promise<WebhookDeliveryListResponse> {
+    const response = await this.client.get<WebhookDeliveryListResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/webhooks/${webhookId}/deliveries`);
+    return response.data;
+  }
+}
+
 class MembersAPI {
-  constructor(private client: AxiosInstance) {}
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
 
-  async list(slug: string): Promise<ProjectMember[]> {
-    const response = await this.client.get<ProjectMember[]>(`/api/v1/projects/${slug}/members`);
+  async list(options?: { project?: string }): Promise<ProjectMemberResponse[]> {
+    const response = await this.client.get<ProjectMemberResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members`);
     return response.data;
   }
 
-  async add(slug: string, data: AddMemberDto): Promise<ProjectMember> {
-    const response = await this.client.post<ProjectMember>(`/api/v1/projects/${slug}/members`, data);
+  async add(options: AddMemberDto & { project?: string }): Promise<ProjectMemberResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<ProjectMemberResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members`, data);
     return response.data;
   }
 
-  async update(slug: string, userId: string, data: UpdateMemberRoleDto): Promise<ProjectMember> {
-    const response = await this.client.patch<ProjectMember>(`/api/v1/projects/${slug}/members/${userId}`, data);
+  async update(userId: string, options: UpdateMemberRoleDto & { project?: string }): Promise<ProjectMemberResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.patch<ProjectMemberResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members/${userId}`, data);
     return response.data;
   }
 
-  async remove(slug: string, userId: string): Promise<MessageResponse> {
-    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${slug}/members/${userId}`);
+  async remove(userId: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members/${userId}`);
     return response.data;
   }
 }
 
 class ProjectsAPI {
-  constructor(private client: AxiosInstance) {}
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
 
-  async create(data: CreateProjectDto): Promise<Project> {
-    const response = await this.client.post<Project>(`/api/v1/projects`, data);
+  async create(options: CreateProjectDto): Promise<ProjectResponse> {
+    const data = options;
+    const response = await this.client.post<ProjectResponse>(`/api/v1/projects`, data);
     return response.data;
   }
 
-  async list(): Promise<Project[]> {
-    const response = await this.client.get<Project[]>(`/api/v1/projects`);
+  async list(): Promise<ProjectResponse[]> {
+    const response = await this.client.get<ProjectResponse[]>(`/api/v1/projects`);
     return response.data;
   }
 
-  async update(slug: string, data: UpdateProjectDto): Promise<Project> {
-    const response = await this.client.get<Project>(`/api/v1/projects/${slug}`, { params: data });
+  async get(options?: { project?: string }): Promise<ProjectResponse> {
+    const response = await this.client.get<ProjectResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}`);
+    return response.data;
+  }
+
+  async update(options: UpdateProjectDto & { project?: string }): Promise<ProjectResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.patch<ProjectResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}`, data);
+    return response.data;
+  }
+
+  async delete(options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}`);
     return response.data;
   }
 }
 
 class PlatformsAPI {
-  constructor(private client: AxiosInstance) {}
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
 
-  async create(projectSlug: string, data: CreatePlatformDto): Promise<PlatformResponse> {
-    const response = await this.client.post<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms`, data);
+  async create(options: CreatePlatformDto & { project?: string }): Promise<PlatformResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<PlatformResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms`, data);
     return response.data;
   }
 
-  async list(projectSlug: string): Promise<PlatformResponse[]> {
-    const response = await this.client.get<PlatformResponse[]>(`/api/v1/projects/${projectSlug}/platforms`);
+  async list(options?: { project?: string }): Promise<PlatformResponse[]> {
+    const response = await this.client.get<PlatformResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms`);
     return response.data;
   }
 
-  async get(projectSlug: string, id: string): Promise<PlatformResponse> {
-    const response = await this.client.get<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`);
+  async get(id: string, options?: { project?: string }): Promise<PlatformResponse> {
+    const response = await this.client.get<PlatformResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms/${id}`);
     return response.data;
   }
 
-  async update(projectSlug: string, id: string, data: UpdatePlatformDto): Promise<PlatformResponse> {
-    const response = await this.client.patch<PlatformResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`, data);
+  async update(id: string, options: UpdatePlatformDto & { project?: string }): Promise<PlatformResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.patch<PlatformResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms/${id}`, data);
     return response.data;
   }
 
-  async delete(projectSlug: string, id: string): Promise<MessageResponse> {
-    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}`);
+  async delete(id: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms/${id}`);
     return response.data;
   }
 
-  async registerWebhook(projectSlug: string, id: string): Promise<MessageResponse> {
-    const response = await this.client.post<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/register-webhook`);
+  async registerWebhook(id: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.post<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms/${id}/register-webhook`);
     return response.data;
   }
 
-  async qrCode(projectSlug: string, id: string): Promise<MessageResponse> {
-    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${projectSlug}/platforms/${id}/qr-code`);
+  async qrCode(id: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.get<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms/${id}/qr-code`);
     return response.data;
   }
 
@@ -121,104 +186,190 @@ class PlatformsAPI {
 }
 
 class MessagesAPI {
-  constructor(private client: AxiosInstance) {}
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
 
-  async list(projectSlug: string, data: QueryMessagesDto): Promise<MessageListResponse> {
-    const response = await this.client.get<MessageListResponse>(`/api/v1/projects/${projectSlug}/messages`, { params: data });
+  async list(options: QueryMessagesDto & { project?: string }): Promise<MessageListResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.get<MessageListResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages`, { params: data });
     return response.data;
   }
 
-  async stats(projectSlug: string): Promise<MessageStatsResponse> {
-    const response = await this.client.get<MessageStatsResponse>(`/api/v1/projects/${projectSlug}/messages/stats`);
+  async stats(options?: { project?: string }): Promise<MessageStatsResponse> {
+    const response = await this.client.get<MessageStatsResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/stats`);
     return response.data;
   }
 
-  async get(projectSlug: string, messageId: string): Promise<ReceivedMessage> {
-    const response = await this.client.get<ReceivedMessage>(`/api/v1/projects/${projectSlug}/messages/${messageId}`);
+  async get(messageId: string, options?: { project?: string }): Promise<ReceivedMessageResponse> {
+    const response = await this.client.get<ReceivedMessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/${messageId}`);
     return response.data;
   }
 
-  async cleanup(projectSlug: string): Promise<MessageResponse> {
-    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/messages/cleanup`);
+  async cleanup(options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/cleanup`);
     return response.data;
   }
 
-  async send(projectSlug: string, data: SendMessageDto): Promise<MessageSendResponse> {
-    const response = await this.client.post<MessageSendResponse>(`/api/v1/projects/${projectSlug}/messages/send`, data);
+  async send(options: SendMessageDto & { project?: string }): Promise<MessageSendResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<MessageSendResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/send`, data);
     return response.data;
   }
 
-  async status(projectSlug: string, jobId: string): Promise<MessageStatusResponse> {
-    const response = await this.client.get<MessageStatusResponse>(`/api/v1/projects/${projectSlug}/messages/status/${jobId}`);
+  async status(jobId: string, options?: { project?: string }): Promise<MessageStatusResponse> {
+    const response = await this.client.get<MessageStatusResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/status/${jobId}`);
     return response.data;
   }
 
-  async retry(projectSlug: string, jobId: string): Promise<MessageRetryResponse> {
-    const response = await this.client.post<MessageRetryResponse>(`/api/v1/projects/${projectSlug}/messages/retry/${jobId}`);
+  async retry(jobId: string, options?: { project?: string }): Promise<MessageRetryResponse> {
+    const response = await this.client.post<MessageRetryResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/retry/${jobId}`);
     return response.data;
   }
 
-  async sent(projectSlug: string): Promise<SentMessage[]> {
-    const response = await this.client.get<SentMessage[]>(`/api/v1/projects/${projectSlug}/messages/sent`);
+  async sent(options?: { project?: string }): Promise<SentMessageResponse[]> {
+    const response = await this.client.get<SentMessageResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/sent`);
+    return response.data;
+  }
+
+  async react(options: SendReactionDto & { project?: string }): Promise<MessageResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/react`, data);
+    return response.data;
+  }
+
+  async unreact(options: SendReactionDto & { project?: string }): Promise<MessageResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/unreact`, data);
+    return response.data;
+  }
+}
+
+class IdentitiesAPI {
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
+
+  async create(options: CreateIdentityDto & { project?: string }): Promise<IdentityResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<IdentityResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities`, data);
+    return response.data;
+  }
+
+  async list(options?: { project?: string }): Promise<IdentityResponse[]> {
+    const response = await this.client.get<IdentityResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities`);
+    return response.data;
+  }
+
+  async lookup(options?: { project?: string }): Promise<IdentityResponse> {
+    const response = await this.client.get<IdentityResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities/lookup`);
+    return response.data;
+  }
+
+  async get(id: string, options?: { project?: string }): Promise<IdentityResponse> {
+    const response = await this.client.get<IdentityResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities/${id}`);
+    return response.data;
+  }
+
+  async update(id: string, options: UpdateIdentityDto & { project?: string }): Promise<IdentityResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.patch<IdentityResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities/${id}`, data);
+    return response.data;
+  }
+
+  async addAlias(id: string, options: AddAliasDto & { project?: string }): Promise<IdentityAliasResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<IdentityAliasResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities/${id}/aliases`, data);
+    return response.data;
+  }
+
+  async removeAlias(id: string, aliasId: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities/${id}/aliases/${aliasId}`);
+    return response.data;
+  }
+
+  async delete(id: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities/${id}`);
+    return response.data;
+  }
+
+  async messages(id: string, options?: { project?: string }): Promise<ReceivedMessageResponse[]> {
+    const response = await this.client.get<ReceivedMessageResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities/${id}/messages`);
+    return response.data;
+  }
+
+  async reactions(id: string, options?: { project?: string }): Promise<ReceivedReactionResponse[]> {
+    const response = await this.client.get<ReceivedReactionResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/identities/${id}/reactions`);
+    return response.data;
+  }
+}
+
+class AuthAPI {
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
+
+  async whoami(): Promise<PermissionResponse> {
+    const response = await this.client.get<PermissionResponse>(`/api/v1/auth/whoami`);
     return response.data;
   }
 }
 
 class ApikeysAPI {
-  constructor(private client: AxiosInstance) {}
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
 
-  async create(projectSlug: string, data: CreateApiKeyDto): Promise<ApiKeyResponse> {
-    const response = await this.client.post<ApiKeyResponse>(`/api/v1/projects/${projectSlug}/keys`, data);
+  async create(options: CreateApiKeyDto & { project?: string }): Promise<ApiKeyResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<ApiKeyResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/keys`, data);
     return response.data;
   }
 
-  async list(projectSlug: string): Promise<ApiKeyListResponse[]> {
-    const response = await this.client.get<ApiKeyListResponse[]>(`/api/v1/projects/${projectSlug}/keys`);
+  async list(options?: { project?: string }): Promise<ApiKeyListResponse[]> {
+    const response = await this.client.get<ApiKeyListResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/keys`);
     return response.data;
   }
 
-  async revoke(projectSlug: string, keyId: string): Promise<MessageResponse> {
-    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/keys/${keyId}`);
+  async revoke(keyId: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/keys/${keyId}`);
     return response.data;
   }
 
-  async roll(projectSlug: string, keyId: string): Promise<ApiKeyRollResponse> {
-    const response = await this.client.post<ApiKeyRollResponse>(`/api/v1/projects/${projectSlug}/keys/${keyId}/roll`);
+  async roll(keyId: string, options?: { project?: string }): Promise<ApiKeyRollResponse> {
+    const response = await this.client.post<ApiKeyRollResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/keys/${keyId}/roll`);
     return response.data;
   }
 }
 
 class PlatformLogsAPI {
-  constructor(private client: AxiosInstance) {}
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
 
-  async list(slug: string): Promise<PlatformLogsResponse> {
-    const response = await this.client.get<PlatformLogsResponse>(`/api/v1/projects/${slug}/platforms/logs`);
+  async list(options?: { project?: string }): Promise<PlatformLogsResponse> {
+    const response = await this.client.get<PlatformLogsResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms/logs`);
     return response.data;
   }
 
-  async get(slug: string, platformId: string): Promise<PlatformLogsResponse> {
-    const response = await this.client.get<PlatformLogsResponse>(`/api/v1/projects/${slug}/platforms/${platformId}/logs`);
+  async get(platformId: string, options?: { project?: string }): Promise<PlatformLogsResponse> {
+    const response = await this.client.get<PlatformLogsResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms/${platformId}/logs`);
     return response.data;
   }
 
-  async stats(slug: string): Promise<PlatformLogStatsResponse> {
-    const response = await this.client.get<PlatformLogStatsResponse>(`/api/v1/projects/${slug}/platforms/logs/stats`);
+  async stats(options?: { project?: string }): Promise<PlatformLogStatsResponse> {
+    const response = await this.client.get<PlatformLogStatsResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/platforms/logs/stats`);
     return response.data;
   }
 }
 
 export class GateKit {
   private client: AxiosInstance;
+  private defaultProject?: string;
 
   // API group instances
+  readonly webhooks: WebhooksAPI;
   readonly members: MembersAPI;
   readonly projects: ProjectsAPI;
   readonly platforms: PlatformsAPI;
   readonly messages: MessagesAPI;
+  readonly identities: IdentitiesAPI;
+  readonly auth: AuthAPI;
   readonly apikeys: ApikeysAPI;
   readonly platformLogs: PlatformLogsAPI;
 
   constructor(config: GateKitConfig) {
+    this.defaultProject = config.defaultProject;
     this.client = axios.create({
       baseURL: config.apiUrl,
       timeout: config.timeout || 30000,
@@ -229,12 +380,15 @@ export class GateKit {
     this.setupErrorHandling();
 
     // Initialize API groups after client is ready
-    this.members = new MembersAPI(this.client);
-    this.projects = new ProjectsAPI(this.client);
-    this.platforms = new PlatformsAPI(this.client);
-    this.messages = new MessagesAPI(this.client);
-    this.apikeys = new ApikeysAPI(this.client);
-    this.platformLogs = new PlatformLogsAPI(this.client);
+    this.webhooks = new WebhooksAPI(this.client, this);
+    this.members = new MembersAPI(this.client, this);
+    this.projects = new ProjectsAPI(this.client, this);
+    this.platforms = new PlatformsAPI(this.client, this);
+    this.messages = new MessagesAPI(this.client, this);
+    this.identities = new IdentitiesAPI(this.client, this);
+    this.auth = new AuthAPI(this.client, this);
+    this.apikeys = new ApikeysAPI(this.client, this);
+    this.platformLogs = new PlatformLogsAPI(this.client, this);
   }
 
   private setupAuthentication(config: GateKitConfig): void {
@@ -268,5 +422,9 @@ export class GateKit {
         );
       }
     );
+  }
+
+  getDefaultProject(): string | undefined {
+    return this.defaultProject;
   }
 }
