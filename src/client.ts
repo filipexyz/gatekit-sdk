@@ -46,6 +46,32 @@ import {
 } from './types';
 import { GateKitError, AuthenticationError, RateLimitError } from './errors';
 
+class MembersAPI {
+  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
+
+  async list(options?: { project?: string }): Promise<ProjectMemberResponse[]> {
+    const response = await this.client.get<ProjectMemberResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members`);
+    return response.data;
+  }
+
+  async add(options: AddMemberDto & { project?: string }): Promise<ProjectMemberResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<ProjectMemberResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members`, data);
+    return response.data;
+  }
+
+  async update(userId: string, options: UpdateMemberRoleDto & { project?: string }): Promise<ProjectMemberResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.patch<ProjectMemberResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members/${userId}`, data);
+    return response.data;
+  }
+
+  async remove(userId: string, options?: { project?: string }): Promise<MessageResponse> {
+    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members/${userId}`);
+    return response.data;
+  }
+}
+
 class WebhooksAPI {
   constructor(private client: AxiosInstance, private gatekit: GateKit) {}
 
@@ -78,32 +104,6 @@ class WebhooksAPI {
 
   async deliveries(webhookId: string, options?: { project?: string }): Promise<WebhookDeliveryListResponse> {
     const response = await this.client.get<WebhookDeliveryListResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/webhooks/${webhookId}/deliveries`);
-    return response.data;
-  }
-}
-
-class MembersAPI {
-  constructor(private client: AxiosInstance, private gatekit: GateKit) {}
-
-  async list(options?: { project?: string }): Promise<ProjectMemberResponse[]> {
-    const response = await this.client.get<ProjectMemberResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members`);
-    return response.data;
-  }
-
-  async add(options: AddMemberDto & { project?: string }): Promise<ProjectMemberResponse> {
-    const { project, ...data } = options;
-    const response = await this.client.post<ProjectMemberResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members`, data);
-    return response.data;
-  }
-
-  async update(userId: string, options: UpdateMemberRoleDto & { project?: string }): Promise<ProjectMemberResponse> {
-    const { project, ...data } = options;
-    const response = await this.client.patch<ProjectMemberResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members/${userId}`, data);
-    return response.data;
-  }
-
-  async remove(userId: string, options?: { project?: string }): Promise<MessageResponse> {
-    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members/${userId}`);
     return response.data;
   }
 }
@@ -358,8 +358,8 @@ export class GateKit {
   private defaultProject?: string;
 
   // API group instances
-  readonly webhooks: WebhooksAPI;
   readonly members: MembersAPI;
+  readonly webhooks: WebhooksAPI;
   readonly projects: ProjectsAPI;
   readonly platforms: PlatformsAPI;
   readonly messages: MessagesAPI;
@@ -380,8 +380,8 @@ export class GateKit {
     this.setupErrorHandling();
 
     // Initialize API groups after client is ready
-    this.webhooks = new WebhooksAPI(this.client, this);
     this.members = new MembersAPI(this.client, this);
+    this.webhooks = new WebhooksAPI(this.client, this);
     this.projects = new ProjectsAPI(this.client, this);
     this.platforms = new PlatformsAPI(this.client, this);
     this.messages = new MessagesAPI(this.client, this);

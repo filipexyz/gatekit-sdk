@@ -57,20 +57,6 @@ await gk.messages.send({
 
 ## API Reference
 
-## Webhooks
-
-### Create a new webhook for event notifications
-```typescript
-// Create webhook for all message events
-await gk.webhooks.create(data);
-```
-
-### List all webhooks for a project
-```typescript
-// List all webhooks
-await gk.webhooks.list();
-```
-
 ## Members
 
 ### List all members of a project
@@ -83,6 +69,20 @@ await gk.members.list();
 ```typescript
 // Add a member with admin role
 await gk.members.add(data);
+```
+
+## Webhooks
+
+### Create a new webhook for event notifications
+```typescript
+// Create webhook for all message events
+await gk.webhooks.create(data);
+```
+
+### List all webhooks for a project
+```typescript
+// List all webhooks
+await gk.webhooks.list();
 ```
 
 ## Projects
