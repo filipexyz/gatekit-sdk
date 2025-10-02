@@ -2,6 +2,8 @@
 
 TypeScript SDK for GateKit - Universal messaging gateway API.
 
+> **Auto-generated from backend contracts** - Do not edit manually
+
 ## Installation
 
 ```bash
@@ -20,40 +22,18 @@ const gk = new GateKit({
 
 // Send a message
 const result = await gk.messages.send({
-  project: 'my-project',  // optional if defaultProject is set
   targets: [{ platformId: 'platform-id', type: 'user', id: '123' }],
-  content: { text: 'Hello from GateKit!' }
-});
-
-console.log('Message sent:', result.jobId);
-```
-
-## Configuration
-
-```typescript
-const gk = new GateKit({
-  apiUrl: 'https://api.gatekit.dev',     // API endpoint
-  apiKey: 'gk_live_your_key',           // API key authentication
-  // OR
-  jwtToken: 'your_jwt_token',           // JWT authentication
-  defaultProject: 'my-project',         // Default project (optional)
-  timeout: 30000,                       // Request timeout (ms)
-  retries: 3,                           // Retry attempts
-});
-
-// With default project set, you can omit the project field:
-await gk.messages.send({
-  targets: [...],
-  content: {...}
-});
-
-// Or specify project in the options:
-await gk.messages.send({
-  targets: [...],
-  content: {...},
-  project: 'other-project'
+  content: { text: 'Hello from GateKit!' },
 });
 ```
+
+## Features
+
+- ✅ **Full type safety** - TypeScript types auto-generated from backend
+- ✅ **Perfect sync** - Always matches backend API contracts
+- ✅ **Zero duplication** - Single source of truth from contracts
+- ✅ **Error handling** - Built-in error types and authentication handling
+- ✅ **Rate limiting** - Automatic rate limit detection
 
 ## API Reference
 
@@ -177,30 +157,52 @@ await gk.webhooks.create(data);
 await gk.webhooks.list();
 ```
 
+## Authentication
+
+### API Key (Recommended)
+
+```typescript
+const gk = new GateKit({
+  apiUrl: 'https://api.gatekit.dev',
+  apiKey: 'gk_live_your_api_key_here',
+  defaultProject: 'my-project', // optional
+});
+```
+
+### JWT Token
+
+```typescript
+const gk = new GateKit({
+  apiUrl: 'https://api.gatekit.dev',
+  jwtToken: 'your-jwt-token',
+});
+```
+
 ## Error Handling
 
 ```typescript
+import { GateKitError, AuthenticationError, RateLimitError } from '@gatekit/sdk';
+
 try {
-  const result = await gk.messages.send({ project: 'my-project', ...messageData });
+  await gk.messages.send({ ... });
 } catch (error) {
-  if (error.code === 'INSUFFICIENT_PERMISSIONS') {
-    console.error('Permission denied:', error.message);
-  } else if (error.code === 'VALIDATION_ERROR') {
-    console.error('Invalid data:', error.details);
-  } else {
-    console.error('API error:', error.message);
+  if (error instanceof AuthenticationError) {
+    console.error('Invalid credentials');
+  } else if (error instanceof RateLimitError) {
+    console.error('Rate limit exceeded');
+  } else if (error instanceof GateKitError) {
+    console.error(`API error: ${error.message}`);
   }
 }
 ```
 
 ## Links
 
-[![View on GitHub](https://img.shields.io/badge/View%20on-GitHub-blue?logo=github)](https://github.com/filipexyz/gatekit-sdk)
-[![View on npm](https://img.shields.io/badge/View%20on-npm-red?logo=npm)](https://www.npmjs.com/package/@gatekit/sdk)
+- [Documentation](https://docs.gatekit.dev)
+- [GitHub](https://github.com/filipexyz/gatekit-sdk)
+- [npm](https://www.npmjs.com/package/@gatekit/sdk)
+- [Discord Community](https://discord.gg/bQPsvycW)
 
-- **📦 Repository**: [github.com/filipexyz/gatekit-sdk](https://github.com/filipexyz/gatekit-sdk)
-- **📥 npm Package**: [@gatekit/sdk](https://www.npmjs.com/package/@gatekit/sdk)
-- **🖥️ CLI Package**: [@gatekit/cli](https://www.npmjs.com/package/@gatekit/cli)
-- **📚 Documentation**: [docs.gatekit.dev](https://docs.gatekit.dev)
-- **🎛️ Dashboard**: [app.gatekit.dev](https://app.gatekit.dev)
+## License
 
+MIT
