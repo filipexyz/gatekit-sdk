@@ -57,74 +57,26 @@ await gk.messages.send({
 
 ## API Reference
 
-## Webhooks
+## ApiKeys
 
-### Create a new webhook for event notifications
+### Generate a new API key
 ```typescript
-// Create webhook for all message events
-await gk.webhooks.create(data);
+// Create messaging API key
+await gk.apikeys.create(data);
 ```
 
-### List all webhooks for a project
+### List all API keys for project
 ```typescript
-// List all webhooks
-await gk.webhooks.list();
+// List all API keys
+await gk.apikeys.list();
 ```
 
-## Members
+## Auth
 
-### List all members of a project
+### Get current authentication context and permissions
 ```typescript
-// List all project members
-await gk.members.list();
-```
-
-### Add a member to a project
-```typescript
-// Add a member with admin role
-await gk.members.add(data);
-```
-
-## Projects
-
-### Create a new project
-```typescript
-// Create a simple project
-await gk.projects.create(data);
-```
-
-### List all projects
-```typescript
-// List all projects
-await gk.projects.list();
-```
-
-## Platforms
-
-### Configure a new platform integration
-```typescript
-// Add Discord bot
-await gk.platforms.create(data);
-```
-
-### List configured platforms for project
-```typescript
-// List all platforms
-await gk.platforms.list();
-```
-
-## Messages
-
-### List received messages for a project
-```typescript
-// Get latest 50 messages
-await gk.messages.list(data);
-```
-
-### Get message statistics for a project
-```typescript
-// Get message statistics
-await gk.messages.stats();
+// Usage example
+await gk.auth.whoami();
 ```
 
 ## Identities
@@ -141,26 +93,32 @@ await gk.identities.create(data);
 await gk.identities.list();
 ```
 
-## Auth
+## Members
 
-### Get current authentication context and permissions
+### List all members of a project
 ```typescript
-// Usage example
-await gk.auth.whoami();
+// List all project members
+await gk.members.list();
 ```
 
-## ApiKeys
-
-### Generate a new API key
+### Add a member to a project
 ```typescript
-// Create messaging API key
-await gk.apikeys.create(data);
+// Add a member with admin role
+await gk.members.add(data);
 ```
 
-### List all API keys for project
+## Messages
+
+### List received messages for a project
 ```typescript
-// List all API keys
-await gk.apikeys.list();
+// Get latest 50 messages
+await gk.messages.list(data);
+```
+
+### Get message statistics for a project
+```typescript
+// Get message statistics
+await gk.messages.stats();
 ```
 
 ## Platform Logs
@@ -175,6 +133,48 @@ await gk.platformLogs.list();
 ```typescript
 // List logs for specific platform
 await gk.platformLogs.get('platformId');
+```
+
+## Platforms
+
+### Configure a new platform integration
+```typescript
+// Add Discord bot
+await gk.platforms.create(data);
+```
+
+### List configured platforms for project
+```typescript
+// List all platforms
+await gk.platforms.list();
+```
+
+## Projects
+
+### Create a new project
+```typescript
+// Create a simple project
+await gk.projects.create(data);
+```
+
+### List all projects
+```typescript
+// List all projects
+await gk.projects.list();
+```
+
+## Webhooks
+
+### Create a new webhook for event notifications
+```typescript
+// Create webhook for all message events
+await gk.webhooks.create(data);
+```
+
+### List all webhooks for a project
+```typescript
+// List all webhooks
+await gk.webhooks.list();
 ```
 
 ## Error Handling
