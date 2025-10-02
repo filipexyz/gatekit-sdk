@@ -42,20 +42,6 @@ const gk = new GateKit({
 
 ## API Reference
 
-## Webhooks
-
-### Create a new webhook for event notifications
-```typescript
-// Create webhook for all message events
-await gk.webhooks.create('project-slug', data);
-```
-
-### List all webhooks for a project
-```typescript
-// List all webhooks
-await gk.webhooks.list('project-slug');
-```
-
 ## Members
 
 ### List all members of a project
