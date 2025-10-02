@@ -1,6 +1,12 @@
 // Generated TypeScript types for GateKit SDK
 // DO NOT EDIT - This file is auto-generated from backend contracts
 
+export interface AddAliasDto {
+  platformId: string;
+  providerUserId: string;
+  providerUserDisplay?: string;
+}
+
 export interface AddMemberDto {
   email: string;
   role: ProjectRole;
@@ -37,39 +43,129 @@ export interface ApiKeyRollResponse {
   oldKeyRevokedAt: Date;
 }
 
+export interface AttachmentDto {
+  url?: string;
+  data?: string;
+  filename?: string;
+  mimeType?: string;
+  caption?: string;
+}
+
+export interface ButtonDto {
+  text: string;
+  value?: string;
+  url?: string;
+  style?: ButtonStyle;
+}
+
+export type ButtonStyle = 'primary' | 'secondary' | 'success' | 'danger' | 'link';
+
 export interface ContentDto {
   text?: string;
-  attachments?: any[];
-  buttons?: any[];
-  embeds?: any[];
+  attachments?: AttachmentDto[];
+  buttons?: ButtonDto[];
+  embeds?: EmbedDto[];
 }
 
 export interface CreateApiKeyDto {
   name: string;
   scopes: string[];
-  expiresInDays?: number | undefined;
+  expiresInDays?: number;
+}
+
+export interface CreateIdentityDto {
+  displayName?: string;
+  email?: string;
+  metadata?: Record<string, any>;
+  aliases: IdentityAliasDto[];
 }
 
 export interface CreatePlatformDto {
   platform: PlatformType;
   name: string;
-  description?: string | undefined;
+  description?: string;
   credentials: Record<string, any>;
-  isActive?: boolean | undefined;
-  testMode?: boolean | undefined;
+  isActive?: boolean;
+  testMode?: boolean;
 }
 
 export interface CreateProjectDto {
   name: string;
-  description?: string | undefined;
-  slug?: string | undefined;
-  environment?: ProjectEnvironment | undefined;
-  isDefault?: boolean | undefined;
+  description?: string;
+  id?: string;
+  environment?: ProjectEnvironment;
+  isDefault?: boolean;
   settings?: any;
 }
 
+export interface CreateWebhookDto {
+  name: string;
+  url: string;
+  events: WebhookEventType[];
+  secret?: string;
+}
+
+export interface EmbedAuthorDto {
+  name: string;
+  url?: string;
+  iconUrl?: string;
+}
+
+export interface EmbedDto {
+  title?: string;
+  description?: string;
+  color?: string;
+  url?: string;
+  imageUrl?: string;
+  thumbnailUrl?: string;
+  author?: EmbedAuthorDto;
+  footer?: EmbedFooterDto;
+  timestamp?: string;
+  fields?: EmbedFieldDto[];
+}
+
+export interface EmbedFieldDto {
+  name: string;
+  value: string;
+  inline?: boolean;
+}
+
+export interface EmbedFooterDto {
+  text: string;
+  iconUrl?: string;
+}
+
+export interface IdentityAliasDto {
+  platformId: string;
+  providerUserId: string;
+  providerUserDisplay?: string;
+}
+
+export interface IdentityAliasResponse {
+  id: string;
+  identityId: string;
+  projectId: string;
+  platformId: string;
+  platform: string;
+  providerUserId: string;
+  providerUserDisplay: string | null;
+  linkedAt: Date;
+  linkMethod: 'manual' | 'automatic';
+}
+
+export interface IdentityResponse {
+  id: string;
+  projectId: string;
+  displayName: string | null;
+  email: string | null;
+  metadata: Record<string, any> | null;
+  createdAt: Date;
+  updatedAt: Date;
+  aliases: IdentityAliasResponse[];
+}
+
 export interface MessageListResponse {
-  messages: ReceivedMessage[];
+  messages: ReceivedMessageResponse[];
   pagination: {
     total: number;
     limit: number;
@@ -136,7 +232,7 @@ export interface MessageStatusResponse {
 export interface MetadataDto {
   trackingId?: string;
   tags?: string[];
-  priority?: 'low' | 'normal' | 'high';
+  priority?: Priority;
 }
 
 export interface OptionsDto {
@@ -145,7 +241,24 @@ export interface OptionsDto {
   scheduled?: string;
 }
 
-export interface PlatformLog {
+export interface PermissionResponse {
+  authType: 'api-key' | 'jwt';
+  permissions: string[];
+  project?: {
+    id: string;
+    name: string;
+  };
+  user?: {
+    userId: string;
+    email?: string;
+  };
+  apiKey?: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface PlatformLogResponse {
   id: string;
   projectId: string;
   platformId?: string;
@@ -164,7 +277,7 @@ export interface PlatformLog {
 }
 
 export interface PlatformLogsResponse {
-  logs: PlatformLog[];
+  logs: PlatformLogResponse[];
   pagination: {
     total: number;
     limit: number;
@@ -197,26 +310,13 @@ export interface PlatformResponse {
   updatedAt: Date;
 }
 
-export type PlatformType = 'discord' | 'telegram';
+export type PlatformType = 'discord' | 'telegram' | 'whatsapp-evo';
 
-export interface Project {
-  id: string;
-  name: string;
-  description?: string;
-  slug: string;
-  environment: 'development' | 'staging' | 'production';
-  isDefault: boolean;
-  settings?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-  _count?: {
-    apiKeys: number;
-  };
-}
+export type Priority = 'low' | 'normal' | 'high';
 
 export type ProjectEnvironment = 'development' | 'staging' | 'production';
 
-export interface ProjectMember {
+export interface ProjectMemberResponse {
   id: string;
   projectId: string;
   userId: string;
@@ -230,22 +330,37 @@ export interface ProjectMember {
   };
 }
 
+export interface ProjectResponse {
+  id: string;
+  name: string;
+  description?: string;
+  environment: 'development' | 'staging' | 'production';
+  isDefault: boolean;
+  settings?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    apiKeys: number;
+  };
+}
+
 export type ProjectRole = 'owner' | 'admin' | 'member' | 'viewer';
 
 export interface QueryMessagesDto {
-  platform?: string | undefined;
-  platformId?: string | undefined;
-  chatId?: string | undefined;
-  userId?: string | undefined;
-  startDate?: string | undefined;
-  endDate?: string | undefined;
-  limit?: number | undefined;
-  offset?: number | undefined;
-  order?: "asc" | "desc" | undefined;
-  raw?: boolean | undefined;
+  platform?: string;
+  platformId?: string;
+  chatId?: string;
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+  limit?: number;
+  offset?: number;
+  order?: 'asc' | 'desc';
+  raw?: boolean;
+  reactions?: boolean;
 }
 
-export interface ReceivedMessage {
+export interface ReceivedMessageResponse {
   id: string;
   platform: string;
   providerMessageId: string;
@@ -264,6 +379,21 @@ export interface ReceivedMessage {
   };
 }
 
+export interface ReceivedReactionResponse {
+  id: string;
+  projectId: string;
+  platformId: string;
+  platform: string;
+  providerMessageId: string;
+  providerChatId: string;
+  providerUserId: string;
+  userDisplay: string | null;
+  emoji: string;
+  reactionType: 'added' | 'removed';
+  rawData: Record<string, any>;
+  receivedAt: Date;
+}
+
 export interface SendMessageDto {
   targets: TargetDto[];
   content: ContentDto;
@@ -271,7 +401,13 @@ export interface SendMessageDto {
   metadata?: MetadataDto;
 }
 
-export interface SentMessage {
+export interface SendReactionDto {
+  platformId: string;
+  messageId: string;
+  emoji: string;
+}
+
+export interface SentMessageResponse {
   id: string;
   platform: string;
   jobId: string | null;
@@ -307,8 +443,16 @@ export interface SupportedPlatformsResponse {
 
 export interface TargetDto {
   platformId: string;
-  type: 'user' | 'channel' | 'group';
+  type: TargetType;
   id: string;
+}
+
+export type TargetType = 'user' | 'channel' | 'group';
+
+export interface UpdateIdentityDto {
+  displayName?: string;
+  email?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface UpdateMemberRoleDto {
@@ -318,18 +462,72 @@ export interface UpdateMemberRoleDto {
 export interface UpdatePlatformDto {
   name?: string;
   description?: string;
+  credentials?: Record<string, any>;
   isActive?: boolean;
   testMode?: boolean;
-  credentials?: Record<string, unknown>;
 }
 
 export interface UpdateProjectDto {
-  name?: string | undefined;
-  description?: string | undefined;
-  slug?: string | undefined;
-  environment?: ProjectEnvironment | undefined;
-  isDefault?: boolean | undefined;
+  name?: string;
+  description?: string;
+  id?: string;
+  environment?: ProjectEnvironment;
+  isDefault?: boolean;
   settings?: any;
+}
+
+export interface UpdateWebhookDto {
+  name?: string;
+  url?: string;
+  events?: WebhookEventType[];
+  isActive?: boolean;
+}
+
+export interface WebhookDeliveryListResponse {
+  deliveries: WebhookDeliveryResponse[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+}
+
+export interface WebhookDeliveryResponse {
+  id: string;
+  event: WebhookEventType;
+  status: 'pending' | 'success' | 'failed';
+  responseCode: number | null;
+  error: string | null;
+  attempts: number;
+  deliveredAt: Date | null;
+  createdAt: Date;
+  payload: Record<string, unknown>;
+}
+
+export interface WebhookDetailResponse {
+  stats: {
+    total: number;
+    successful: number;
+    failed: number;
+    pending: number;
+    successRate: string;
+  };
+}
+
+export type WebhookEventType = 'message.received' | 'message.sent' | 'message.failed' | 'button.clicked' | 'reaction.added' | 'reaction.removed';
+
+export interface WebhookResponse {
+  id: string;
+  projectId: string;
+  name: string;
+  url: string;
+  events: WebhookEventType[];
+  secret: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  message?: string;
 }
 
 // SDK configuration
@@ -337,6 +535,7 @@ export interface GateKitConfig {
   apiUrl: string;
   apiKey?: string;
   jwtToken?: string;
+  defaultProject?: string;
   timeout?: number;
   retries?: number;
 }
