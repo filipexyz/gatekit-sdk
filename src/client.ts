@@ -10,7 +10,6 @@ import {
   CreateApiKeyDto,
   CreatePlatformDto,
   CreateProjectDto,
-  CreateWebhookDto,
   GateKitConfig,
   MessageListResponse,
   MessageResponse,
@@ -30,41 +29,9 @@ import {
   SupportedPlatformsResponse,
   UpdateMemberRoleDto,
   UpdatePlatformDto,
-  UpdateProjectDto,
-  UpdateWebhookDto,
-  WebhookDetailResponse,
-  WebhookResponse
+  UpdateProjectDto
 } from './types';
 import { GateKitError, AuthenticationError, RateLimitError } from './errors';
-
-class WebhooksAPI {
-  constructor(private client: AxiosInstance) {}
-
-  async create(projectSlug: string, data: CreateWebhookDto): Promise<WebhookResponse> {
-    const response = await this.client.post<WebhookResponse>(`/api/v1/projects/${projectSlug}/webhooks`, data);
-    return response.data;
-  }
-
-  async list(projectSlug: string): Promise<WebhookResponse[]> {
-    const response = await this.client.get<WebhookResponse[]>(`/api/v1/projects/${projectSlug}/webhooks`);
-    return response.data;
-  }
-
-  async get(projectSlug: string, webhookId: string): Promise<WebhookDetailResponse> {
-    const response = await this.client.get<WebhookDetailResponse>(`/api/v1/projects/${projectSlug}/webhooks/${webhookId}`);
-    return response.data;
-  }
-
-  async update(projectSlug: string, webhookId: string, data: UpdateWebhookDto): Promise<WebhookResponse> {
-    const response = await this.client.patch<WebhookResponse>(`/api/v1/projects/${projectSlug}/webhooks/${webhookId}`, data);
-    return response.data;
-  }
-
-  async delete(projectSlug: string, webhookId: string): Promise<MessageResponse> {
-    const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${projectSlug}/webhooks/${webhookId}`);
-    return response.data;
-  }
-}
 
 class MembersAPI {
   constructor(private client: AxiosInstance) {}
@@ -244,7 +211,6 @@ export class GateKit {
   private client: AxiosInstance;
 
   // API group instances
-  readonly webhooks: WebhooksAPI;
   readonly members: MembersAPI;
   readonly projects: ProjectsAPI;
   readonly platforms: PlatformsAPI;
@@ -263,7 +229,6 @@ export class GateKit {
     this.setupErrorHandling();
 
     // Initialize API groups after client is ready
-    this.webhooks = new WebhooksAPI(this.client);
     this.members = new MembersAPI(this.client);
     this.projects = new ProjectsAPI(this.client);
     this.platforms = new PlatformsAPI(this.client);
