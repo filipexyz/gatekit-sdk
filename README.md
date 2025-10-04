@@ -53,10 +53,16 @@ await gk.apikeys.list();
 
 ## Auth
 
-### Get current authentication context and permissions
+### Create a new user account (first user becomes admin)
 ```typescript
-// Usage example
-await gk.auth.whoami();
+// Create first admin user
+await gk.auth.signup(data);
+```
+
+### Login with email and password
+```typescript
+// Login with email and password
+await gk.auth.login(data);
 ```
 
 ## Identities
