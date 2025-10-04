@@ -51,6 +51,16 @@ export interface AttachmentDto {
   caption?: string;
 }
 
+export interface AuthResponse {
+  accessToken: string;
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+    isAdmin: boolean;
+  };
+}
+
 export interface ButtonDto {
   text: string;
   value?: string;
@@ -61,10 +71,14 @@ export interface ButtonDto {
 export type ButtonStyle = 'primary' | 'secondary' | 'success' | 'danger' | 'link';
 
 export interface ContentDto {
+  subject?: string;
   text?: string;
+  markdown?: string;
+  html?: string;
   attachments?: AttachmentDto[];
   buttons?: ButtonDto[];
   embeds?: EmbedDto[];
+  platformOptions?: Record<string, any>;
 }
 
 export interface CreateApiKeyDto {
@@ -162,6 +176,11 @@ export interface IdentityResponse {
   createdAt: Date;
   updatedAt: Date;
   aliases: IdentityAliasResponse[];
+}
+
+export interface LoginDto {
+  email: string;
+  password: string;
 }
 
 export interface MessageListResponse {
@@ -310,7 +329,7 @@ export interface PlatformResponse {
   updatedAt: Date;
 }
 
-export type PlatformType = 'discord' | 'telegram' | 'whatsapp-evo';
+export type PlatformType = 'discord' | 'telegram' | 'whatsapp-evo' | 'email';
 
 export type Priority = 'low' | 'normal' | 'high';
 
@@ -423,6 +442,12 @@ export interface SentMessageResponse {
   createdAt: Date;
 }
 
+export interface SignupDto {
+  email: string;
+  password: string;
+  name?: string;
+}
+
 export interface SupportedPlatformsResponse {
   platforms: Array<{
     name: string;
@@ -528,6 +553,29 @@ export interface WebhookResponse {
   createdAt: Date;
   updatedAt: Date;
   message?: string;
+}
+
+/**
+ * Platform-specific options for Email (SMTP)
+ * Auto-generated from EmailPlatformOptions
+ */
+export interface EmailPlatformOptions {
+  /** CC recipients (Carbon Copy) Multiple recipients who will receive a copy of the email */
+  cc?: string[];
+  /** BCC recipients (Blind Carbon Copy) Multiple recipients who will receive a copy without others knowing */
+  bcc?: string[];
+  /** Reply-To address Email address where replies should be sent (different from sender) */
+  replyTo?: string;
+  /** Custom SMTP headers Advanced: Add custom headers to the email */
+  headers?: Record<string, string>;
+}
+
+/**
+ * Platform-specific options for all supported platforms
+ * Use this in platformOptions field when sending messages
+ */
+export interface PlatformOptions {
+  email?: EmailPlatformOptions;
 }
 
 // SDK configuration

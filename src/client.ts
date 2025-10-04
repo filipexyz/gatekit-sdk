@@ -8,6 +8,7 @@ import {
   ApiKeyListResponse,
   ApiKeyResponse,
   ApiKeyRollResponse,
+  AuthResponse,
   CreateApiKeyDto,
   CreateIdentityDto,
   CreatePlatformDto,
@@ -16,6 +17,7 @@ import {
   GateKitConfig,
   IdentityAliasResponse,
   IdentityResponse,
+  LoginDto,
   MessageListResponse,
   MessageResponse,
   MessageRetryResponse,
@@ -34,6 +36,7 @@ import {
   SendMessageDto,
   SendReactionDto,
   SentMessageResponse,
+  SignupDto,
   SupportedPlatformsResponse,
   UpdateIdentityDto,
   UpdateMemberRoleDto,
@@ -73,6 +76,18 @@ class ApikeysAPI {
 
 class AuthAPI {
   constructor(private client: AxiosInstance, private gatekit: GateKit) {}
+
+  async signup(options: SignupDto): Promise<AuthResponse> {
+    const data = options;
+    const response = await this.client.post<AuthResponse>(`/api/v1/auth/signup`, data);
+    return response.data;
+  }
+
+  async login(options: LoginDto): Promise<AuthResponse> {
+    const data = options;
+    const response = await this.client.post<AuthResponse>(`/api/v1/auth/login`, data);
+    return response.data;
+  }
 
   async whoami(): Promise<PermissionResponse> {
     const response = await this.client.get<PermissionResponse>(`/api/v1/auth/whoami`);
