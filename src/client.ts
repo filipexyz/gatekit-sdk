@@ -3,6 +3,7 @@
 
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import {
+  AcceptInviteDto,
   AddAliasDto,
   AddMemberDto,
   ApiKeyListResponse,
@@ -11,12 +12,14 @@ import {
   AuthResponse,
   CreateApiKeyDto,
   CreateIdentityDto,
+  CreateInviteDto,
   CreatePlatformDto,
   CreateProjectDto,
   CreateWebhookDto,
   GateKitConfig,
   IdentityAliasResponse,
   IdentityResponse,
+  InviteResponse,
   LoginDto,
   MessageListResponse,
   MessageResponse,
@@ -35,11 +38,12 @@ import {
   ReceivedReactionResponse,
   SendMessageDto,
   SendReactionDto,
-  SentMessageResponse,
+  SentMessageListResponse,
   SignupDto,
   SupportedPlatformsResponse,
   UpdateIdentityDto,
   UpdateMemberRoleDto,
+  UpdatePasswordDto,
   UpdatePlatformDto,
   UpdateProjectDto,
   UpdateWebhookDto,
@@ -89,8 +93,20 @@ class AuthAPI {
     return response.data;
   }
 
+  async acceptInvite(options: AcceptInviteDto): Promise<AuthResponse> {
+    const data = options;
+    const response = await this.client.post<AuthResponse>(`/api/v1/auth/accept-invite`, data);
+    return response.data;
+  }
+
   async whoami(): Promise<PermissionResponse> {
     const response = await this.client.get<PermissionResponse>(`/api/v1/auth/whoami`);
+    return response.data;
+  }
+
+  async updatePassword(options: UpdatePasswordDto): Promise<MessageResponse> {
+    const data = options;
+    const response = await this.client.patch<MessageResponse>(`/api/v1/auth/password`, data);
     return response.data;
   }
 }
@@ -176,6 +192,12 @@ class MembersAPI {
     const response = await this.client.delete<MessageResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members/${userId}`);
     return response.data;
   }
+
+  async invite(options: CreateInviteDto & { project?: string }): Promise<InviteResponse> {
+    const { project, ...data } = options;
+    const response = await this.client.post<InviteResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/members/invite`, data);
+    return response.data;
+  }
 }
 
 class MessagesAPI {
@@ -189,6 +211,11 @@ class MessagesAPI {
 
   async stats(options?: { project?: string }): Promise<MessageStatsResponse> {
     const response = await this.client.get<MessageStatsResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/stats`);
+    return response.data;
+  }
+
+  async sent(options?: { project?: string }): Promise<SentMessageListResponse> {
+    const response = await this.client.get<SentMessageListResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/sent`);
     return response.data;
   }
 
@@ -215,11 +242,6 @@ class MessagesAPI {
 
   async retry(jobId: string, options?: { project?: string }): Promise<MessageRetryResponse> {
     const response = await this.client.post<MessageRetryResponse>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/retry/${jobId}`);
-    return response.data;
-  }
-
-  async sent(options?: { project?: string }): Promise<SentMessageResponse[]> {
-    const response = await this.client.get<SentMessageResponse[]>(`/api/v1/projects/${options?.project || this.gatekit.getDefaultProject() || ''}/messages/sent`);
     return response.data;
   }
 

@@ -1,6 +1,12 @@
 // Generated TypeScript types for GateKit SDK
 // DO NOT EDIT - This file is auto-generated from backend contracts
 
+export interface AcceptInviteDto {
+  token: string;
+  name: string;
+  password: string;
+}
+
 export interface AddAliasDto {
   platformId: string;
   providerUserId: string;
@@ -94,6 +100,10 @@ export interface CreateIdentityDto {
   aliases: IdentityAliasDto[];
 }
 
+export interface CreateInviteDto {
+  email: string;
+}
+
 export interface CreatePlatformDto {
   platform: PlatformType;
   name: string;
@@ -176,6 +186,12 @@ export interface IdentityResponse {
   createdAt: Date;
   updatedAt: Date;
   aliases: IdentityAliasResponse[];
+}
+
+export interface InviteResponse {
+  inviteLink: string;
+  email: string;
+  expiresAt: Date;
 }
 
 export interface LoginDto {
@@ -426,6 +442,16 @@ export interface SendReactionDto {
   emoji: string;
 }
 
+export interface SentMessageListResponse {
+  messages: SentMessageResponse[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+}
+
 export interface SentMessageResponse {
   id: string;
   platform: string;
@@ -482,6 +508,11 @@ export interface UpdateIdentityDto {
 
 export interface UpdateMemberRoleDto {
   role: ProjectRole;
+}
+
+export interface UpdatePasswordDto {
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface UpdatePlatformDto {
