@@ -1,6 +1,6 @@
 {
   "name": "@gatekit/sdk",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Official TypeScript SDK for GateKit universal messaging gateway",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

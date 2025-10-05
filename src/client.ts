@@ -407,7 +407,18 @@ export class GateKit {
   }
 
   private setupAuthentication(config: GateKitConfig): void {
-    if (config.apiKey) {
+    // For dynamic tokens (browser apps) - use interceptor
+    if (config.getToken) {
+      this.client.interceptors.request.use((axiosConfig) => {
+        const token = config.getToken!();
+        if (token) {
+          axiosConfig.headers.Authorization = `Bearer ${token}`;
+        }
+        return axiosConfig;
+      });
+    }
+    // For static credentials (CLI, server-side) - use defaults (faster)
+    else if (config.apiKey) {
       this.client.defaults.headers['X-API-Key'] = config.apiKey;
     } else if (config.jwtToken) {
       this.client.defaults.headers['Authorization'] = `Bearer ${config.jwtToken}`;

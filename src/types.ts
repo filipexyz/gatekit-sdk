@@ -583,6 +583,7 @@ export interface GateKitConfig {
   apiUrl: string;
   apiKey?: string;
   jwtToken?: string;
+  getToken?: () => string | null; // Dynamic token getter (preferred over jwtToken)
   defaultProject?: string;
   timeout?: number;
   retries?: number;
